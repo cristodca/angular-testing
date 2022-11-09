@@ -1,6 +1,6 @@
 import { ValueService } from './value.service';
 
-fdescribe('ValueService', () => {
+describe('ValueService', () => {
   	let service: ValueService;
 
 	//   Ejecuta antes de cada prueba, por lo que el estado de una prueba anterior no afecta a una nueva prueba.
