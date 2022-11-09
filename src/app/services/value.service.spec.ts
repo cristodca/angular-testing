@@ -1,3 +1,4 @@
+import { TestBed } from '@angular/core/testing';
 import { ValueService } from './value.service';
 
 describe('ValueService', () => {
@@ -5,7 +6,10 @@ describe('ValueService', () => {
 
 	//   Ejecuta antes de cada prueba, por lo que el estado de una prueba anterior no afecta a una nueva prueba.
   	beforeEach(() => {
-		service = new ValueService()
+        TestBed.configureTestingModule({
+            providers: [ ValueService ]
+        })
+		service = TestBed.inject(ValueService)
   	});
 
 	//   Verifica que haya sido creada
