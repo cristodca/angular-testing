@@ -51,20 +51,21 @@ export class ProductsService {
     .pipe(
       catchError((error: HttpErrorResponse) => {
         if (error.status === HttpStatusCode.Conflict) {
-          return throwError('Algo esta fallando en el server');
+          return throwError(() => 'Algo esta fallando en el server');
         }
         if (error.status === HttpStatusCode.NotFound) {
-          return throwError('El producto no existe');
+          return throwError(() => 'El producto no existe');
         }
         if (error.status === HttpStatusCode.Unauthorized) {
-          return throwError('No estas permitido');
+          return throwError(() => 'No estas permitido');
         }
-        return throwError('Ups algo salio mal');
+        return throwError(() => 'Ups algo salio mal');
       })
     )
   }
 
   create(dto: CreateProductDTO) {
+    // dto.title = 'asdf jklhadsjkh'
     return this.http.post<Product>(this.apiUrl, dto);
   }
 
