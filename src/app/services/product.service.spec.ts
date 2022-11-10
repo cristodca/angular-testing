@@ -89,11 +89,21 @@ fdescribe('Product Service', () => {
           ...generateOneProduct(),
           price: 100,
         },
+        {
+          ...generateOneProduct(),
+          price: 0,
+        },
+        {
+          ...generateOneProduct(),
+          price: -100,
+        },
       ];
 
       productService.getAll().subscribe((response) => {
         expect(response[0].taxes).toEqual(32)
         expect(response[1].taxes).toEqual(16)
+        expect(response[2].taxes).toEqual(0)
+        expect(response[3].taxes).toEqual(0)
 
         doneFn();
       });
@@ -104,5 +114,26 @@ fdescribe('Product Service', () => {
       req.flush(mockData);
       httpController.verify();
     });
+
+    it('should send query params with limit 10 and offset 3', (doneFn) => {
+      const mockData: Product[] = generateManyProducts(2)
+      const limit = 10
+      const offset = 3
+
+      productService.getAll(limit, offset).subscribe((response) => {
+        expect()
+
+        doneFn()
+      })
+
+      const req = httpController.expectOne(`${environment.API_URL}/api/v1?limit=${limit}&offset=${offset}`)
+      req.flush(mockData)
+      const params = req.request.params
+
+      expect(params.get('limit')).toEqual(`${limit}`)
+      expect(params.get('offset')).toEqual(`${offset}`)
+
+      httpController.verify()
+    })
   });
 });
