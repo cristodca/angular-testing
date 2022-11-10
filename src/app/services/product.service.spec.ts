@@ -1,60 +1,108 @@
-import { TestBed } from "@angular/core/testing"
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing'
-import { ProductsService } from "./product.service"
-import { Product } from "../models/product.model"
-import { environment } from "src/environments/environment"
-import { generateManyProducts } from "../models/product.mock"
+import { TestBed } from '@angular/core/testing';
+import {
+  HttpClientTestingModule,
+  HttpTestingController,
+} from '@angular/common/http/testing';
+import { ProductsService } from './product.service';
+import { Product } from '../models/product.model';
+import { environment } from 'src/environments/environment';
+import {
+  generateManyProducts,
+  generateOneProduct,
+} from '../models/product.mock';
 
 fdescribe('Product Service', () => {
-  let productService: ProductsService
-  let httpController: HttpTestingController
+  let productService: ProductsService;
+  let httpController: HttpTestingController;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-        imports: [
-            HttpClientTestingModule
-        ],
-        providers: [
-            ProductsService
-        ]
-    })
+      imports: [HttpClientTestingModule],
+      providers: [ProductsService],
+    });
 
-    productService = TestBed.inject(ProductsService)
-    httpController = TestBed.inject(HttpTestingController)
-  })
+    productService = TestBed.inject(ProductsService);
+    httpController = TestBed.inject(HttpTestingController);
+  });
 
   it('created successfully', () => {
-    expect(productService).toBeTruthy()
-  })
+    expect(productService).toBeTruthy();
+  });
 
   describe('tests for getAllSimple()', () => {
     it('should return a product list', (doneFn) => {
-      const mockData: Product[] = generateManyProducts(2)
-1
+      const mockData: Product[] = generateManyProducts(2);
+      1;
       productService.getAllSimple().subscribe((response) => {
-        expect(response).toEqual(mockData)
-        
-        doneFn()
-      })
+        expect(response).toEqual(mockData);
 
-      const req = httpController.expectOne(`${environment.API_URL}/api/v1/products`)
-      req.flush(mockData)
-      httpController.verify()
-    })
+        doneFn();
+      });
+
+      const req = httpController.expectOne(
+        `${environment.API_URL}/api/v1/products`
+      );
+      req.flush(mockData);
+      httpController.verify();
+    });
 
     it('response should be more than 4 products', (doneFn) => {
-        const mockData: Product[] = generateManyProducts(5)
+      const mockData: Product[] = generateManyProducts(5);
 
-        productService.getAllSimple().subscribe((response) => {
-          expect(response.length).toBeGreaterThan(4)
-          doneFn()
-        })
+      productService.getAllSimple().subscribe((response) => {
+        expect(response.length).toBeGreaterThan(4);
+        doneFn();
+      });
 
-        const req = httpController.expectOne(`${environment.API_URL}/api/v1/products`)
-        req.flush(mockData)
-        httpController.verify()
-    })
-  })
+      const req = httpController.expectOne(
+        `${environment.API_URL}/api/v1/products`
+      );
+      req.flush(mockData);
+      httpController.verify();
+    });
+  });
 
-  
-})
+  describe('tests for getAll()', () => {
+    it('should return a product list', (doneFn) => {
+      const mockData: Product[] = generateManyProducts(2);
+      1;
+      productService.getAll().subscribe((response) => {
+        expect(response.length).toEqual(mockData.length);
+
+        doneFn();
+      });
+
+      const req = httpController.expectOne(
+        `${environment.API_URL}/api/v1`
+      );
+      req.flush(mockData);
+      httpController.verify();
+    });
+
+    it('should return product list with taxes', (doneFn) => {
+      const mockData: Product[] = [
+        {
+          ...generateOneProduct(),
+          price: 200,
+        },
+        {
+          ...generateOneProduct(),
+          price: 100,
+        },
+      ];
+
+      productService.getAll().subscribe((response) => {
+        expect(response[0].taxes).toEqual(32)
+        expect(response[1].taxes).toEqual(16)
+
+        doneFn();
+      });
+
+      const req = httpController.expectOne(
+        `${environment.API_URL}/api/v1`
+      );
+      req.flush(mockData);
+      httpController.verify();
+    });
+  });
+});
