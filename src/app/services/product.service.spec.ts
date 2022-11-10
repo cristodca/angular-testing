@@ -3,6 +3,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { ProductsService } from "./product.service"
 import { Product } from "../models/product.model"
 import { environment } from "src/environments/environment"
+import { generateManyProducts } from "../models/product.mock"
 
 fdescribe('Product Service', () => {
   let productService: ProductsService
@@ -28,18 +29,11 @@ fdescribe('Product Service', () => {
 
   describe('tests for getAllSimple()', () => {
     it('should return a product list', (doneFn) => {
-      const mockData: Product[] = [{
-        id: '123',
-        title: 'title',
-        price: 12,
-        description: 'asdfasdf',
-        category: { id: 132, name: 'asdfasdf' },
-        images: ['img', 'img2']
-      }]
-
+      const mockData: Product[] = generateManyProducts(2)
+1
       productService.getAllSimple().subscribe((response) => {
         expect(response).toEqual(mockData)
-    
+        
         doneFn()
       })
 
@@ -47,5 +41,20 @@ fdescribe('Product Service', () => {
       req.flush(mockData)
       httpController.verify()
     })
+
+    it('response should be more than 4 products', (doneFn) => {
+        const mockData: Product[] = generateManyProducts(5)
+
+        productService.getAllSimple().subscribe((response) => {
+          expect(response.length).toBeGreaterThan(4)
+          doneFn()
+        })
+
+        const req = httpController.expectOne(`${environment.API_URL}/api/v1/products`)
+        req.flush(mockData)
+        httpController.verify()
+    })
   })
+
+  
 })
