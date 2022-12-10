@@ -10,6 +10,7 @@ import {
   generateManyProducts,
   generateOneProduct,
 } from '../models/product.mock';
+import { HttpStatusCode } from '@angular/common/http';
 
 describe('Product Service', () => {
   let productService: ProductsService;
@@ -195,6 +196,43 @@ describe('Product Service', () => {
       
       expect(req.request.method).toEqual('DELETE')
       req.flush(mockData)
+    })
+  })
+
+  describe('test for getOne', () => {
+    it('should return one product', (doneFn) => {
+      const mockData: Product = generateOneProduct()
+      const productId = '1'
+
+      productService.getOne(productId).subscribe((response) => {
+        expect(response).toEqual(mockData)
+        doneFn()
+      })
+
+      const req = httpController.expectOne(`${environment.API_URL}/api/v1/${productId}`)
+      
+      expect(req.request.method).toEqual('GET')
+      req.flush(mockData)
+    })
+
+    it('should return the right message when status code is 404', (doneFn) => {
+      const productId = '1'
+      const msgError = '404 message'
+      const mockError = {
+        status: HttpStatusCode.NotFound,
+        statusText: msgError
+      }
+
+      productService.getOne(productId)
+      .subscribe({ error : (error) => {  // Error
+        expect(error).toEqual('El producto no existe')
+        doneFn()
+      }})
+
+      const req = httpController.expectOne(`${environment.API_URL}/api/v1/${productId}`)
+      expect(req.request.method).toEqual('GET')
+
+      req.flush(msgError, mockError)
     })
   })
 });
