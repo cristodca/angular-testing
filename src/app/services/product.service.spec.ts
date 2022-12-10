@@ -4,14 +4,14 @@ import {
   HttpTestingController,
 } from '@angular/common/http/testing';
 import { ProductsService } from './product.service';
-import { CreateProductDTO, Product } from '../models/product.model';
+import { CreateProductDTO, Product, UpdateProductDTO } from '../models/product.model';
 import { environment } from 'src/environments/environment';
 import {
   generateManyProducts,
   generateOneProduct,
 } from '../models/product.mock';
 
-fdescribe('Product Service', () => {
+describe('Product Service', () => {
   let productService: ProductsService;
   let httpController: HttpTestingController;
 
@@ -156,6 +156,45 @@ fdescribe('Product Service', () => {
 
       expect(req.request.body).toEqual(dto)
       expect(req.request.method).toEqual('POST')
+    })
+  })
+
+  describe('test for update', () => {
+    it('should update product', (doneFn) => {
+      const mockData: Product = generateOneProduct()
+      const dto: UpdateProductDTO = {
+        title: 'new Product Title',
+      }
+
+      const productId = '1'
+
+      productService.update(productId, {...dto}).subscribe((response) => {
+        expect(response).toEqual(mockData)
+        doneFn()
+      })
+
+      const req = httpController.expectOne(`${environment.API_URL}/api/v1/${productId}`)
+      
+      expect(req.request.body).toEqual(dto)
+      expect(req.request.method).toEqual('PUT')
+      req.flush(mockData)
+    })
+  })
+
+  describe('test for delete', () => {
+    it('should delete product', (doneFn) => {
+      const mockData: boolean = true
+      const productId = '1'
+
+      productService.delete(productId).subscribe((response) => {
+        expect(response).toEqual(mockData)
+        doneFn()
+      })
+
+      const req = httpController.expectOne(`${environment.API_URL}/api/v1/${productId}`)
+      
+      expect(req.request.method).toEqual('DELETE')
+      req.flush(mockData)
     })
   })
 });
